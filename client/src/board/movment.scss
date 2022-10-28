@@ -1,0 +1,29 @@
+.vassels-container{
+    position: absolute;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(8, [col-start] 80px);
+    grid-template-rows: repeat(8, [row-start] 80px);
+    height: 640px;
+    width: 640px;
+    font-size: 3rem;
+}
+
+.center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    font-size: 3rem;
+    border: 0;
+}
+
+.vassle{
+    z-index: -1;
+}
+
+.white{
+    color: white;
+}
+
+

@@ -1,0 +1,26 @@
+.positions-container{
+    position: absolute;
+    z-index: 0;
+    display: grid;
+    grid-template-columns: repeat(8, [col-start] 80px);
+    grid-template-rows: repeat(8, [row-start] 80px);
+    height: 640px;
+    width: 640px;
+    font-size: 3rem;
+}
+
+.selected{
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(8, [col-start] 80px);
+    grid-template-rows: repeat(8, [row-start] 80px);
+    height: 640px;
+    width: 640px;
+    font-size: 3rem;
+}
+
+.possible-move{
+    background-color: rgba(49, 194, 33, 0.4);
+    border: 1px solid green;
+}
