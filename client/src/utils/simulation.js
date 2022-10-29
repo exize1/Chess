@@ -1,7 +1,5 @@
 import { eatPeice } from "./rules"
 
-const isWhiteTurn = window.sessionStorage.getItem("white") 
-
 export const queenSimulation = (border, intPosition, pieceType, splitedBoard) => {
     const possiblePositions = 
         rookSimulation(border, intPosition, pieceType, splitedBoard)

@@ -1,13 +1,19 @@
-import { allOponentMoves, findTheKing } from "./helpers"
+import { allOponentMoves, findTheKing, isProtectedVassle, MyMoves } from "./helpers"
 
-export const casstle = (border, intPosition, pieceType, splitedBoard) => {
-    const casstleLeft = [ intPosition - 1, intPosition - 2]
+export const casstle = ( intPosition, pieceType, splitedBoard, whiteTurn) => {
+    const casstleLeft = [intPosition - 1, intPosition - 2]
     const casstleRight = [intPosition + 1, intPosition + 2, intPosition + 3]
     const cassels = []
+    let validMoves = []
     if (splitedBoard[casstleLeft[0]] === "x" && splitedBoard[casstleLeft[1]] === "x") cassels.push(casstleLeft)
     if (splitedBoard[casstleRight[0]] === "x" && splitedBoard[casstleRight[1]] === "x" && splitedBoard[casstleRight[2]] === "x") cassels.push(casstleRight)
+    cassels.forEach(move => {
+        validMoves = isProtectedVassle(splitedBoard, whiteTurn, pieceType, intPosition, move)
+    })
+    if(validMoves ==! undefined && validMoves.length === cassels[0].length ){
+        return cassels
 
-    return cassels
+    }else return []
 }
 
 export const eatPeice = (border, intPosition, pieceType, splitedBoard, direction, index, forward) => {
@@ -66,14 +72,12 @@ export const check = (board, whiteTurn) => {
     const oponentMoves = allOponentMoves(board, whiteTurn)
     const kingPosition = findTheKing(board, whiteTurn)
     let isCheck = oponentMoves.includes(kingPosition)
-    // isCheck && console.log("You're on check");
+    
     return isCheck
 }
 
 export const checkmate = (board, whiteTurn) => {
-    const ischeck = check(board, whiteTurn) 
-    const myMoves = allOponentMoves(board, !whiteTurn)
-    const oponentMoves = allOponentMoves(board, whiteTurn)
-    console.log('oponent moves' , oponentMoves);
-    console.log("my moves" , myMoves);
+    const myMoves = MyMoves(board, whiteTurn)
+    myMoves.length === 0 && check(board, whiteTurn) && console.log("Checkmate!")
+    myMoves.length === 0 && !check(board, whiteTurn) && console.log("Draw")
 }

@@ -2,7 +2,7 @@
     display: grid;
     grid-template-columns: repeat(8, [col-start] 80px);
     grid-template-rows: repeat(8, [row-start] 80px);
-    background-color: brown;
+    background-color: #85BBD9;
     height: 640px;
     width: 640px;
 }
@@ -13,7 +13,7 @@ $columns: h g f e d c b a;
 @each $row in $rows {
     @each $column in $columns{
        .#{$row + $column}{
-            background-color: gray;
-       } 
+         background-color: #F8FFB2
+    } 
     }
 }
