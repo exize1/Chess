@@ -12,7 +12,7 @@ function Game() {
   useEffect(() => {
     publicRequest.put('/position', {
         "_id" : "635a7e13b45f7777529539c4",
-        "board": board,
+        "board": "RNBKQBNRPPPPPPPPxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxpppppppprnbkqbnr",
         "white": "true"
     }).then((res) => {
         getGame(setId, setBoard)

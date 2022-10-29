@@ -1,5 +1,4 @@
 import "./movment.scss"
-import "./position.scss"
 import {
     FaChessPawn,
     FaChessKing,
@@ -11,8 +10,7 @@ import {
 import { useState } from "react"
 import { bishopMovment, kingMovment, knightMovment, pawnMovment, queenMovment, rookMovment } from "../utils/movements"
 import { publicRequest } from "../requestMethods"
-import { useEffect } from "react"
-import { changePawn, isPawnInTheEnd, kingMoved, RookMoved } from "../utils/helpers"
+import { isPawnInTheEnd, kingMoved, RookMoved } from "../utils/helpers"
 import { check, checkmate } from "../utils/rules"
 import SuperPawm from "../components/SuperPawn"
 import { getGame } from "../utils/req"
@@ -140,7 +138,7 @@ const Movment = ({ board, setBoard, id, setId}) => {
                         if(possiblePositions.includes(i + 8*index)){
                             return(
                                 <div className="possible-move-container" onClick={() => movePiece(i + 8*index, splitedBoard)}>
-                                    <button className={`possible-move`}>
+                                    <button className={`possible-move-btn`}>
                                         {/* <span className="numbered">{((i)+ 8*index)}</span> */}
                                     </button>
                                 </div>
@@ -165,12 +163,9 @@ const Movment = ({ board, setBoard, id, setId}) => {
         <div className="vassels-container">
 
             {splitedBoard.map((vassle, i) => {
-                
                 const black = ['R', 'N', 'B', 'K', 'Q', 'B', 'N', 'R', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P']
                 const white = ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'r', 'n', 'b', 'k', 'q', 'b', 'n', 'r']
-
                 if ( vassle !== "x" ){
-
                     if ( white.includes(vassle) ){
                         return(
                             <button className="center" value={[i, vassle]} onClick={(e) =>
@@ -198,7 +193,7 @@ const Movment = ({ board, setBoard, id, setId}) => {
                                 {vassle === "P" && <FaChessPawn className="vassle black"/>}
                             </button>
                         )  
-                    }
+                    }else return(<></>)
                 }else {
                     return(
                         <button className="center" value={i}/>

@@ -10,7 +10,7 @@ export const casstle = ( intPosition, pieceType, splitedBoard, whiteTurn) => {
     cassels.forEach(move => {
         validMoves = isProtectedVassle(splitedBoard, whiteTurn, pieceType, intPosition, move)
     })
-    if(validMoves ==! undefined && validMoves.length === cassels[0].length ){
+    if(validMoves !== undefined && cassels[0] !== undefined && validMoves.length === cassels[0].length ){
         return cassels
 
     }else return []
