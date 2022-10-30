@@ -9,6 +9,8 @@ import { publicRequest } from './requestMethods';
 function Game() {
   const [board, setBoard] = useState("RNBKQBNRPPPPPPPPxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxpppppppprnbkqbnr")
   const [id, setId] = useState("")
+
+
   useEffect(() => {
     publicRequest.put('/position', {
         "_id" : "635a7e13b45f7777529539c4",

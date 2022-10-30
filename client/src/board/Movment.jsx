@@ -7,14 +7,16 @@ import {
     FaChessBishop,
     FaChessRook
 } from "react-icons/fa"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { bishopMovment, kingMovment, knightMovment, pawnMovment, queenMovment, rookMovment } from "../utils/movements"
 import { publicRequest } from "../requestMethods"
 import { isPawnInTheEnd, kingMoved, RookMoved } from "../utils/helpers"
 import { check, checkmate } from "../utils/rules"
 import SuperPawm from "../components/SuperPawn"
 import { getGame } from "../utils/req"
-
+import sound from '../assets/check.mp3'
+import checkmateSound from '../assets/checkmate.mp3'
+import { socket } from "../App"
 
 const Movment = ({ board, setBoard, id, setId}) => {
     const splitedBoard = board.split("")
@@ -27,6 +29,8 @@ const Movment = ({ board, setBoard, id, setId}) => {
     const [isKingsMoved, setIsKingsMoved] = useState([false, false])
     const [superPawn, setSuperPawn] = useState([false, false])
     const [superPawnData, setSuperPawnData] = useState([])
+    const [isCheck, setIsCheck] = useState(false)
+    const [ischeckmate, setIsCheckmate] = useState(false)
 
     const [isRooksMoved, setIsRooksMoved] = useState({
                                                         blackLeft: false,
@@ -114,8 +118,10 @@ const Movment = ({ board, setBoard, id, setId}) => {
         setBoard(splitedBoard.join(""))
         setWhiteTurn(!whiteTurn)
 
-        check(splitedBoard, !whiteTurn)
-        checkmate(splitedBoard, !whiteTurn)
+        check(splitedBoard, !whiteTurn) && setIsCheck(!isCheck)
+        sendMessage(splitedBoard.join(""))
+
+        checkmate(splitedBoard, !whiteTurn, setIsCheckmate)
     }
 
     const changePawn = (superPawnData, pickedVassle) => {
@@ -128,6 +134,21 @@ const Movment = ({ board, setBoard, id, setId}) => {
         setBoard(splitedBoard.join(""))
     }
 
+    const playCheck = () =>{
+        
+        ischeckmate ? new Audio(checkmateSound).play() : new Audio(sound).play()
+    }
+
+    useEffect(() => {
+        socket.on("recieve_message", data => {
+            setBoard(data.updatedboard)
+          })
+    }, [socket])
+
+
+    const sendMessage = (updatedboard) => {
+        socket.emit('send_message', { updatedboard })
+    }
     return(
         <>           
         <div className={selected ? "selected" :"positions-container"}>
@@ -137,7 +158,9 @@ const Movment = ({ board, setBoard, id, setId}) => {
                     {columns.map((column, i) => {
                         if(possiblePositions.includes(i + 8*index)){
                             return(
-                                <div className="possible-move-container" onClick={() => movePiece(i + 8*index, splitedBoard)}>
+                                <div className="possible-move-container" onClick={() => {
+                                    movePiece(i + 8*index, splitedBoard)
+                                    }}>
                                     <button className={`possible-move-btn`}>
                                         {/* <span className="numbered">{((i)+ 8*index)}</span> */}
                                     </button>

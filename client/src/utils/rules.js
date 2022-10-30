@@ -8,11 +8,16 @@ export const casstle = ( intPosition, pieceType, splitedBoard, whiteTurn) => {
     if (splitedBoard[casstleLeft[0]] === "x" && splitedBoard[casstleLeft[1]] === "x") cassels.push(casstleLeft)
     if (splitedBoard[casstleRight[0]] === "x" && splitedBoard[casstleRight[1]] === "x" && splitedBoard[casstleRight[2]] === "x") cassels.push(casstleRight)
     cassels.forEach(move => {
-        validMoves = isProtectedVassle(splitedBoard, whiteTurn, pieceType, intPosition, move)
+        validMoves.push(isProtectedVassle(splitedBoard, whiteTurn, pieceType, intPosition, move))
     })
-    if(validMoves !== undefined && cassels[0] !== undefined && validMoves.length === cassels[0].length ){
-        return cassels
-
+    if(validMoves !== undefined && cassels[0] !== undefined && validMoves[0].length === cassels[0].length ){
+        if(validMoves !== undefined && cassels[1] !== undefined && validMoves[1].length === cassels[1].length ){
+            return cassels
+        }else {
+            return [cassels[0]]
+        }
+    }else if (validMoves !== undefined && cassels[1] !== undefined && validMoves[1].length === cassels[1].length ){
+        return [cassels[1]]
     }else return []
 }
 
@@ -72,12 +77,11 @@ export const check = (board, whiteTurn) => {
     const oponentMoves = allOponentMoves(board, whiteTurn)
     const kingPosition = findTheKing(board, whiteTurn)
     let isCheck = oponentMoves.includes(kingPosition)
-    
     return isCheck
 }
 
-export const checkmate = (board, whiteTurn) => {
+export const checkmate = (board, whiteTurn, setIsCheckmate) => {
     const myMoves = MyMoves(board, whiteTurn)
-    myMoves.length === 0 && check(board, whiteTurn) && console.log("Checkmate!")
+    myMoves.length === 0 && check(board, whiteTurn) && setIsCheckmate(true)
     myMoves.length === 0 && !check(board, whiteTurn) && console.log("Draw")
 }
