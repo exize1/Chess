@@ -1,12 +1,16 @@
 import { allOponentMoves, findTheKing, isProtectedVassle, MyMoves } from "./helpers"
 
 export const casstle = ( intPosition, pieceType, splitedBoard, whiteTurn) => {
-    const casstleLeft = [intPosition - 1, intPosition - 2]
-    const casstleRight = [intPosition + 1, intPosition + 2, intPosition + 3]
+    const casstleLeft = [intPosition - 1, intPosition - 2, intPosition - 3]
+    const casstleRight = [intPosition + 1, intPosition + 2, intPosition + 3, intPosition + 4]
     const cassels = []
     let validMoves = []
-    if (splitedBoard[casstleLeft[0]] === "x" && splitedBoard[casstleLeft[1]] === "x") cassels.push(casstleLeft)
-    if (splitedBoard[casstleRight[0]] === "x" && splitedBoard[casstleRight[1]] === "x" && splitedBoard[casstleRight[2]] === "x") cassels.push(casstleRight)
+    if (splitedBoard[casstleLeft[0]] === "x" && splitedBoard[casstleLeft[1]] === "x") {
+        if(splitedBoard[casstleLeft[2]] === "R" || splitedBoard[casstleLeft[2]] === "r") cassels.push(casstleLeft)
+    }
+    if (splitedBoard[casstleRight[0]] === "x" && splitedBoard[casstleRight[1]] === "x" && splitedBoard[casstleRight[2]] === "x") {
+        if(splitedBoard[casstleRight[3]] === "R" || splitedBoard[casstleRight[3]] === "r")cassels.push(casstleRight)
+    }
     cassels.forEach(move => {
         validMoves.push(isProtectedVassle(splitedBoard, whiteTurn, pieceType, intPosition, move))
     })

@@ -8,10 +8,10 @@ export const socket = io.connect("http://localhost:3001")
 
 function App() {
 
-  const [room, setRoom] = useState("")
-  const [message, setMessage] = useState("")
-  const [messageRecieved, setMessageRecieved] = useState("")
   const [newGame, setNewGame] = useState(false)
+  const [engineGame, setEengineGame] = useState(false)
+  const [engineId, setEengineId] = useState("")
+  const [room, setRoom] = useState(0)
 
   // useEffect(() => {
   //   socket.on("recieve_message", data => {
@@ -19,32 +19,13 @@ function App() {
   //   })
   // }, [socket])
 
-  const joinRoom = () => {
-    if (room !== "") {
-      socket.emit("join_room", room)
-    }
-  }
-
-  const sendMessage = () => {
-    socket.emit('send_message', { message, room })
-    // setUserName(true)
-  }
   return (
     <div  className="App">
-      <div>
-        {/* <input type="text" placeholder="Room" onChange={(e) => {setRoom(e.target.value)}}></input> */}
-        {/* <button onClick={joinRoom}>join</button>
-        <input type="text" placeholder="message" onChange={(e) => {setMessage(e.target.value)}}></input> */}
-        {/* <button onClick={joinRoom}>Enter Game</button> */}
-        {/* <p>{messageRecieved}</p> */}
-      </div>
-      {/* <div> */}
       {newGame ?
-        <Game/>
+        <Game room={room} engineId={engineId} engineGame={engineGame}/>
         :
-        <Home setNewGame={setNewGame}/>
-      }
-      {/* </div> */}
+        <Home setNewGame={setNewGame}  setRoom={setRoom} setEengineId={setEengineId} setEengineGame={setEengineGame}/>
+      } 
     </div>
   )
 }

@@ -1,14 +1,7 @@
 const mongoose = require('mongoose')
 
-const GameSchema = mongoose.Schema({
-    room:{
-        type : Number,
-        required : true,
-    },
-    players:{
-        type : Number,
-        required : true,
-    },
+const EngineSchema = mongoose.Schema({
+
     board: {
         type : String,
         required : true,
@@ -29,5 +22,5 @@ const GameSchema = mongoose.Schema({
     }
 })
 
-const Game = mongoose.model('game', GameSchema)
-module.exports = Game
+const Engine = mongoose.model('engine', EngineSchema)
+module.exports = Engine 

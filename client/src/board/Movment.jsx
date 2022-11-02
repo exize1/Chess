@@ -13,12 +13,12 @@ import { publicRequest } from "../requestMethods"
 import { isPawnInTheEnd, kingMoved, RookMoved } from "../utils/helpers"
 import { check, checkmate } from "../utils/rules"
 import SuperPawm from "../components/SuperPawn"
-import { getGame } from "../utils/req"
+import { getEngineMove, getGame } from "../utils/req"
 import sound from '../assets/check.mp3'
 import checkmateSound from '../assets/checkmate.mp3'
 import { socket } from "../App"
 
-const Movment = ({ board, setBoard, id, setId}) => {
+const Movment = ({ board, setBoard, room, engineGame, engineId }) => {
     const splitedBoard = board.split("")
 
     // for glowing the cubes
@@ -37,17 +37,30 @@ const Movment = ({ board, setBoard, id, setId}) => {
                                                         blackRight: false,
                                                         whiteLeft: false,
                                                         whiteRight: false
-                                                    })
-
-
-    window.sessionStorage.setItem("white", whiteTurn)
-
+                                                    })   
+                                                    
+    const playerWhite = window.sessionStorage.getItem("white")
+    
     const columns = [1, 2, 3, 4, 5, 6, 7 ,8]
     const rows = [1, 2, 3, 4, 5, 6, 7 ,8]
     const movePieceReq = (body) =>{
+
+        const engineBody = { 
+            board: splitedBoard.join(""),
+            white: !whiteTurn,
+            id: engineId
+        }
+        engineGame ? 
+            publicRequest.put('/engine', engineBody)
+            .then((res) => {
+               getEngineMove(setBoard, engineId)
+               setWhiteTurn(true)
+            })
+            .catch((err) => console.log(err))
+        :
         publicRequest.put('/position', body)
             .then((res) => {
-                getGame(setId, setBoard)
+                getGame(setBoard, room)
             })
             .catch((err) => console.log(err));
     } 
@@ -90,7 +103,6 @@ const Movment = ({ board, setBoard, id, setId}) => {
             splitedBoard[position - 1] = "x"
             splitedBoard[position + 1] = "R"
         }
-
         if(pieceType === "k" && position === pieceLocation + 2 && !isKingsMoved[1] && !isRooksMoved.whiteRight){
             splitedBoard[position + 2] = "x"
             splitedBoard[position - 1] = "r"
@@ -99,27 +111,27 @@ const Movment = ({ board, setBoard, id, setId}) => {
             splitedBoard[position + 2] = "x"
             splitedBoard[position - 1] = "R"
         }
+
         splitedBoard[position] = pieceType
-
-        isPawnInTheEnd(pieceType, position, setSuperPawn, superPawn, setSuperPawnData)
-
         splitedBoard[pieceLocation] = "x"
         setSelected(false)
         setPossiblePositions([])
-        const body = {
-            _id: id, 
+
+        isPawnInTheEnd(pieceType, position, setSuperPawn, superPawn, setSuperPawnData)
+
+        const body = { 
             board: splitedBoard.join(""),
-            white: !whiteTurn 
+            white: !whiteTurn,
+            room: room
         }
         RookMoved(pieceType, setIsRooksMoved, isRooksMoved, pieceLocation)
         kingMoved(pieceType, setIsKingsMoved, isKingsMoved, body)
         
         movePieceReq(body)
         setBoard(splitedBoard.join(""))
-        setWhiteTurn(!whiteTurn)
 
         check(splitedBoard, !whiteTurn) && setIsCheck(!isCheck)
-        sendMessage(splitedBoard.join(""))
+        aMove(splitedBoard.join(""), whiteTurn)
 
         checkmate(splitedBoard, !whiteTurn, setIsCheckmate)
     }
@@ -140,14 +152,16 @@ const Movment = ({ board, setBoard, id, setId}) => {
     }
 
     useEffect(() => {
-        socket.on("recieve_message", data => {
+        socket.on("cach_the_move", data => {
             setBoard(data.updatedboard)
+            setWhiteTurn(!data.whiteTurn)
           })
     }, [socket])
 
 
-    const sendMessage = (updatedboard) => {
-        socket.emit('send_message', { updatedboard })
+    const aMove = (updatedboard, whiteTurn) => {
+        setWhiteTurn(!whiteTurn)
+        socket.emit('make_the_move', { updatedboard, whiteTurn })
     }
     return(
         <>           
@@ -173,7 +187,7 @@ const Movment = ({ board, setBoard, id, setId}) => {
                                     setPossiblePositions([])
                                 }}>
                                     <button className={` center `} >
-                                        {/* <span className="numbered">{((i)+ 8*index)}</span> */}
+                                        <span className="numbered">{((i)+ 8*index)}</span>
                                     </button>
                                 </div>
                             )
@@ -192,28 +206,26 @@ const Movment = ({ board, setBoard, id, setId}) => {
                     if ( white.includes(vassle) ){
                         return(
                             <button className="center" value={[i, vassle]} onClick={(e) =>
-                             whiteTurn && 
-                             possibleMovments(e.target.value, splitedBoard)}>
-                                {vassle === "r" && <FaChessRook className="vassle white"/>}
-                                {vassle === "n" && <FaChessKnight className="vassle white"/>}
-                                {vassle === "b" && <FaChessBishop className="vassle white"/>}
-                                {vassle === "k" && <FaChessKing className="vassle white"/>}
-                                {vassle === "q" && <FaChessQueen className="vassle white"/>}
-                                {vassle === "p" && <FaChessPawn className="vassle white"/>}
+                                playerWhite === "true" && whiteTurn && possibleMovments(e.target.value, splitedBoard)}>
+                                    {vassle === "r" && <FaChessRook className={`vassle white ${playerWhite === "false" && "rotate-board"}`}/>}
+                                    {vassle === "n" && <FaChessKnight className={`vassle white ${playerWhite === "false" && "rotate-board"}`}/>}
+                                    {vassle === "b" && <FaChessBishop className={`vassle white ${playerWhite === "false" && "rotate-board"}`}/>}
+                                    {vassle === "k" && <FaChessKing className={`vassle white ${playerWhite === "false" && "rotate-board"}`}/>}
+                                    {vassle === "q" && <FaChessQueen className={`vassle white ${playerWhite === "false" && "rotate-board"}`}/>}
+                                    {vassle === "p" && <FaChessPawn className={`vassle white ${playerWhite === "false" && "rotate-board"}`}/>}
                             </button>
                         )  
                     }
                     else if ( black.includes(vassle) ){
                         return(
                             <button className="center" value={[i, vassle]} onClick={(e) => 
-                                !whiteTurn && 
-                            possibleMovments(e.target.value, splitedBoard)}>
-                                {vassle === "R" && <FaChessRook className="vassle black"/>}
-                                {vassle === "N" && <FaChessKnight className="vassle black"/>}
-                                {vassle === "B" && <FaChessBishop className="vassle black"/>}
-                                {vassle === "K" && <FaChessKing className="vassle black"/>}
-                                {vassle === "Q" && <FaChessQueen className="vassle black"/>}
-                                {vassle === "P" && <FaChessPawn className="vassle black"/>}
+                                playerWhite === "false" && !whiteTurn && possibleMovments(e.target.value, splitedBoard)}>
+                                {vassle === "R" && <FaChessRook className={`vassle black ${playerWhite === "false" && "rotate-board"}`}/>}
+                                {vassle === "N" && <FaChessKnight className={`vassle black ${playerWhite === "false" && "rotate-board"}`}/>}
+                                {vassle === "B" && <FaChessBishop className={`vassle black ${playerWhite === "false" && "rotate-board"}`}/>}
+                                {vassle === "K" && <FaChessKing className={`vassle black ${playerWhite === "false" && "rotate-board"}`}/>}
+                                {vassle === "Q" && <FaChessQueen className={`vassle black ${playerWhite === "false" && "rotate-board"}`}/>}
+                                {vassle === "P" && <FaChessPawn className={`vassle black ${playerWhite === "false" && "rotate-board"}`}/>}
                             </button>
                         )  
                     }else return(<></>)

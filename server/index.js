@@ -33,16 +33,23 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     console.log(`User connected ${socket.id}`);
 
-    socket.on("join_room", (data) => {
+    socket.on("creat_room", (data) => {
+        console.log("data");
         socket.join(data)
-        console.log(`User ${socket.id} joined room: ${data}`);
+        console.log(`User ${socket.id} room: ${data} created`);
+        // socket.broadcast.emit("follow_the_room", data + 1)
     })
-    socket.on("send_message", (data) => {
-        socket.broadcast.emit("recieve_message", data)
-    })
-    // socket.on("send_message", (data) => {
-    //     socket.to(data.room).emit("recieve_message", data)
+    
+
+    // socket.on("set_player", (data) => {
+    //     socket.to(data.room).emit("sending_session", data)
     // })
+
+    socket.on("make_the_move", (data) => {
+        socket.broadcast.emit("cach_the_move", data)
+    })
+
+    
 
     socket.on('disconnect', () => {
         console.log('USER DISCONNECTED');
