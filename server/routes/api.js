@@ -1,8 +1,9 @@
 const express = require('express')
-const { engine } = require('../engine/engine')
+const engine = require('../engine/engine')
 const Engine = require('../models/engine')
 const router = express.Router()
 const Game = require('../models/game')
+const Feedback = require('../models/feedback')
 
 
 router.get('/position/:room', (req, res, next) => {
@@ -37,6 +38,24 @@ router.post('/position/', ( req, res, next) => {
   })
 })
 
+router.post('/feedback/', ( req, res, next) => {
+  Feedback.create({usersFeedback: req.body.feedback})
+  .then((data) => {res.json({
+    "error": false,
+    "message": "Thank for contributing me making this app better!",
+    "alertType": "success",
+    "data": data
+  })})
+  .catch(err => {
+    res.json({
+      "error": false,
+      "message": "It's seems we have a little problem, pls try again",
+      "alertType": "danger",
+      "data": err
+    })
+  })  
+})
+
 router.put('/position/', (req, res, next) => {
   Game.findOneAndUpdate({ room: req.body.room}, req.body)
     .then((data) => res.json(data))
@@ -65,7 +84,7 @@ router.post('/engine/', ( req, res, next) => {
 })
 
 router.put('/engine/', async(req, res, next) => {
-  const board = await engine(req.body.board, req.body.white)
+  const board = await engine.engine(req.body.board, req.body.white)
   const update = {
     board
   }
@@ -73,8 +92,5 @@ router.put('/engine/', async(req, res, next) => {
     .then((data) => res.json(data))
     .catch(err => res.json(err))
 })
-
-
-
 
 module.exports = router

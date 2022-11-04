@@ -13,8 +13,6 @@ export const queenMovment = (border, intPosition, pieceType, splitedBoard, white
 export const pawnMovment = (border, intPosition, pieceType, splitedBoard, whiteTurn, isKingsMoved, isRooksMoved) => {
 
     const possiblePositions = []
-    let x = window.sessionStorage.getItem("white")
-    console.log()
     if (pieceType === "P") {
         intPosition - 1 >= border - 7 && splitedBoard[intPosition + 7]  !== "x" && possiblePositions.push(eatPeice(border, intPosition, pieceType, splitedBoard, 7))   
         intPosition + 1 <= border && splitedBoard[intPosition + 9]  !== "x" && possiblePositions.push(eatPeice(border, intPosition, pieceType, splitedBoard, 9))   

@@ -12,13 +12,13 @@ import { bishopMovment, kingMovment, knightMovment, pawnMovment, queenMovment, r
 import { publicRequest } from "../requestMethods"
 import { isPawnInTheEnd, kingMoved, RookMoved } from "../utils/helpers"
 import { check, checkmate } from "../utils/rules"
-import SuperPawm from "../components/SuperPawn"
+import SuperPawm from "../components/superPawn/SuperPawn"
 import { getEngineMove, getGame } from "../utils/req"
-import sound from '../assets/check.mp3'
-import checkmateSound from '../assets/checkmate.mp3'
+// import sound from '../assets/check.mp3'
+// import checkmateSound from '../assets/checkmate.mp3'
 import { socket } from "../App"
 
-const Movment = ({ board, setBoard, room, engineGame, engineId }) => {
+const Movment = ({ board, setBoard, room, engineGame, engineId, setIsCheckmate }) => {
     const splitedBoard = board.split("")
 
     // for glowing the cubes
@@ -30,7 +30,6 @@ const Movment = ({ board, setBoard, room, engineGame, engineId }) => {
     const [superPawn, setSuperPawn] = useState([false, false])
     const [superPawnData, setSuperPawnData] = useState([])
     const [isCheck, setIsCheck] = useState(false)
-    const [ischeckmate, setIsCheckmate] = useState(false)
 
     const [isRooksMoved, setIsRooksMoved] = useState({
                                                         blackLeft: false,
@@ -146,17 +145,17 @@ const Movment = ({ board, setBoard, room, engineGame, engineId }) => {
         setBoard(splitedBoard.join(""))
     }
 
-    const playCheck = () =>{
+    // const playCheck = () =>{
         
-        ischeckmate ? new Audio(checkmateSound).play() : new Audio(sound).play()
-    }
+    //     ischeckmate ? new Audio(checkmateSound).play() : new Audio(sound).play()
+    // }
 
     useEffect(() => {
         socket.on("cach_the_move", data => {
             setBoard(data.updatedboard)
             setWhiteTurn(!data.whiteTurn)
           })
-    }, [socket])
+    }, [setBoard])
 
 
     const aMove = (updatedboard, whiteTurn) => {
@@ -187,7 +186,7 @@ const Movment = ({ board, setBoard, room, engineGame, engineId }) => {
                                     setPossiblePositions([])
                                 }}>
                                     <button className={` center `} >
-                                        <span className="numbered">{((i)+ 8*index)}</span>
+                                        {/* <span className="numbered">{((i)+ 8*index)}</span> */}
                                     </button>
                                 </div>
                             )

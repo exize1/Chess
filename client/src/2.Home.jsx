@@ -1,9 +1,5 @@
 import './App.css';
-import Board from './board/Board';
-import Movment from './board/Movment';
-import { useEffect, useState } from "react"
 import './1.game.css'
-import { getGame } from './utils/req';
 import { publicRequest } from './requestMethods';
 import { socket } from './App';
 import './home.css'
